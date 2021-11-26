@@ -7,9 +7,6 @@ const pool = new Pool({
   database: 'lightbnb'
 });
 
-const properties = require('./json/properties.json');
-const users = require('./json/users.json');
-
 /// Users
 
 /**
@@ -18,15 +15,13 @@ const users = require('./json/users.json');
  * @return {Promise<{}>} A promise to the user.
  */
 
-//DONE
+
 const getUserWithEmail = function(email) {
   return pool.query(`SELECT * FROM users WHERE email = $1`, [email]) //returns a promise
     .then((result) => {
       if (result.rows.length) {
-        console.log(result.rows[0]);
         return result.rows[0]; //returns res.rows as the result of a promise
       } else if (!result.rows.length) {
-        console.log('null');
         return null;
       }
     })
@@ -39,15 +34,13 @@ exports.getUserWithEmail = getUserWithEmail;
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-//DONE
+
 const getUserWithId = function(id) {
   return pool.query(`SELECT * FROM users WHERE id = $1`, [id]) //returns a promise
     .then((result) => {
       if (result.rows.length) {
-        console.log(result.rows[0]);
         return result.rows[0]; //returns res.rows as the result of a promise
       } else if (!result.rows.length) {
-        console.log('null');
         return null;
       }
     })
@@ -55,20 +48,18 @@ const getUserWithId = function(id) {
 };
 exports.getUserWithId = getUserWithId;
 
-
 /**
  * Add a new user to the database.
  * @param {{name: string, password: string, email: string}} user
  * @return {Promise<{}>} A promise to the user.
  */
-//DONE
+
 const addUser =  function(user) {
   return pool.query(`
   INSERT INTO users(name, email, password)
   VALUES($1, $2, $3)
   RETURNING *;`, [user.name, user.email, user.password]) //returns a promise
     .then((result) => {
-      console.log(result.rows[0]);
       return result.rows[0]; //returns res.rows as the result of a promise
     })
     .catch((err) => console.log(err.message));
@@ -82,7 +73,7 @@ exports.addUser = addUser;
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-//DONE
+
 const getAllReservations = function(guest_id, limit = 10) {
   return pool.query(`
   SELECT * FROM properties
@@ -91,8 +82,7 @@ const getAllReservations = function(guest_id, limit = 10) {
   LIMIT $2
   `, [guest_id, limit]) //returns a promise
     .then((result) => {
-      console.log(result.rows);
-      return result.rows;//returns res.rows as the result of a promise
+      return result.rows; //returns res.rows as the result of a promise
     })
     .catch((err) => console.log(err.message));
 };
@@ -106,6 +96,7 @@ exports.getAllReservations = getAllReservations;
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
+
 const getAllProperties = function(options, limit = 10) {
   //setup an array to hold any parameters that may be available for the query
   const queryParams = [];
@@ -159,7 +150,6 @@ const getAllProperties = function(options, limit = 10) {
   ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
-  console.log(queryString, queryParams);
 
   return pool.query(queryString, queryParams)
     .then((result) => {
@@ -186,7 +176,6 @@ const addProperty = function(property) {
     property.post_code, property.country, property.parking_spaces, property.number_of_bathrooms,
     property.number_of_bedrooms])
     .then((result) => {
-      console.log(result.rows[0]);
       return result.rows[0];
     })
     .catch((err) => console.log(err.message));
